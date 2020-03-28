@@ -22,5 +22,9 @@ module.exports = {
     });
   
     return res.json({"id":id});
+  },
+
+  async delete(req, res){
+
   }
 };

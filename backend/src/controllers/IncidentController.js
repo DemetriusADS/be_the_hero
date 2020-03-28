@@ -15,11 +15,48 @@ module.exports = {
     return res.json({id});
   },
   async index(req, res){
-    const incidents = await connection('incidents').select('*');
+    const{ page = 1 } = req.query;
+
+    const [count] = await connection('incidents').count();
+
+    res.header('X-Total-Count', count['count(*)'])
+
+    const incidents = await connection('incidents')
+    .join('ongs', 'ongs.id', '=', 'incidents.ong_id')
+    .limit(5)
+    .offset((page-1)*5)
+    .select([
+      'incidents.*', 
+      'ongs.nome', 
+      'ongs.email', 
+      'ongs.whatsapp', 
+      'ongs.city', 
+      'ongs.uf']);
 
     return res.json(incidents);
   },
+
   async delete(req, res){
-    const delete = 
+    const {id} = req.params;
+    console.log(id);
+    const ong_id = req.headers.authorization;
+    console.log(ong_id);
+
+    const incident = await connection('incidents')
+    .where('id', id)
+    .select('ong_id')
+    .first();
+
+    console.log(`Ong id selected: ${incident}`);
+    if(incident === undefined){
+      return res.status(406).send();
+    }
+    if(incident.ong_id !== ong_id){
+      return res.status(401).json({error: 'operation not permitted.'});
+    }
+
+    await connection('incidents').where('id', id).delete();
+
+    return res.status(204).send();
   }
 }
