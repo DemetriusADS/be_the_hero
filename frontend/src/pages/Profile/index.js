@@ -62,7 +62,7 @@ export default function Profile(){
              <li key={incident.id}>
                 <strong>CASO: </strong>
                 <p>{incident.title}</p>
-                <strong>DESCRIÇÂO:</strong>
+                <strong>DESCRIÇÃO:</strong>
                 <p>{incident.description}</p>
 
                 <strong>VALOR:</strong>
